@@ -67,10 +67,6 @@ impl Index {
         Ok(())
     }
 
-    pub fn merge(&mut self, other: Index) -> Result<()> {
-        Ok(())
-    }
-
     // Read the particular index
     pub fn get(&self, term: &String) -> Option<&Vec<Hit>> {
         self.map.get(term)
@@ -83,6 +79,15 @@ impl Index {
         Ok(())
     }
 
+    pub fn load(&mut self, index: &String) -> Result<()> {
+        let deserialized_index: HashMap<String, Vec<Hit>> = serde_json::from_str(index)?;
+        for (k, v) in deserialized_index {
+            let mut hits = self.map.entry(k).or_insert(Vec::new());
+            hits.extend(v);
+        }
+        Ok(())
+    }
+
     // Remove the particular document from the index
     pub fn remove(&mut self, document_id: u16) -> Result<()> {
         Ok(())
@@ -92,6 +97,10 @@ impl Index {
         text.split(|ch: char| !ch.is_alphanumeric())
             .filter(|word| !word.is_empty())
             .collect()
+    }
+
+    fn merge(&mut self, other: Index) -> Result<()> {
+        Ok(())
     }
 }
 
