@@ -1,5 +1,6 @@
 use crate::storage::DiskFileReader;
 use index::Index;
+use std::thread;
 use storage::FileReader;
 
 mod index;
@@ -7,30 +8,46 @@ mod storage;
 
 fn main() {
     let work_path = "/Users/yunpeng.xiao/codes/index/";
+    let mut handles = vec![];
     let mut index = Index::new();
     for i in 1..=4 {
-        let file_name = format!("{}/documents/document{}", work_path, i);
-        let mut file_reader = DiskFileReader::from(file_name.as_str()).unwrap();
-        let s = file_reader.read_as_string().unwrap();
-        let _ = index.add(i, &s);
+        let handle = thread::spawn(|| {
+            let file_name = format!("{}/documents/document{}", work_path, i);
+            let mut file_reader = DiskFileReader::from(file_name.as_str()).unwrap();
+            let s = file_reader.read_as_string().unwrap();
+            let _ = index.add(i, &s);
+        });
+        handles.push(handle);
     }
 
     let mut index1 = Index::new();
     for i in 1..=2 {
-        let file_name = format!("{}/documents/document{}", work_path, i);
-        let mut file_reader = DiskFileReader::from(file_name.as_str()).unwrap();
-        let s = file_reader.read_as_string().unwrap();
-        let _ = index1.add(i, &s);
+        let handle = thread::spawn(|| {
+            let file_name = format!("{}/documents/document{}", work_path, i);
+            let mut file_reader = DiskFileReader::from(file_name.as_str()).unwrap();
+            let s = file_reader.read_as_string().unwrap();
+            let _ = index1.add(i, &s);
+        });
+        handles.push(handle);
     }
-    let _ = index1.persist(format!("{}documents/index1", work_path).as_str());
 
     let mut index2 = Index::new();
     for i in 3..=4 {
-        let file_name = format!("{}/documents/document{}", work_path, i);
-        let mut file_reader = DiskFileReader::from(file_name.as_str()).unwrap();
-        let s = file_reader.read_as_string().unwrap();
-        let _ = index2.add(i, &s);
+        let handle = thread::spawn(|| {
+            let file_name = format!("{}/documents/document{}", work_path, i);
+            let mut file_reader = DiskFileReader::from(file_name.as_str()).unwrap();
+            let s = file_reader.read_as_string().unwrap();
+            let _ = index2.add(i, &s);
+        });
+        handles.push(handle);
     }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+    handles.clear();
+
+    let _ = index1.persist(format!("{}documents/index1", work_path).as_str());
     let _ = index2.persist(format!("{}documents/index2", work_path).as_str());
 
     let mut file_reader =

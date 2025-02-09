@@ -79,10 +79,11 @@ impl Index {
         Ok(())
     }
 
+    // this method assuming there is no conflict between two indexes
     pub fn load(&mut self, index: &String) -> Result<()> {
         let deserialized_index: HashMap<String, Vec<Hit>> = serde_json::from_str(index)?;
         for (k, v) in deserialized_index {
-            let mut hits = self.map.entry(k).or_insert(Vec::new());
+            let hits = self.map.entry(k).or_insert(Vec::new());
             hits.extend(v);
         }
         Ok(())
@@ -97,10 +98,6 @@ impl Index {
         text.split(|ch: char| !ch.is_alphanumeric())
             .filter(|word| !word.is_empty())
             .collect()
-    }
-
-    fn merge(&mut self, other: Index) -> Result<()> {
-        Ok(())
     }
 }
 
