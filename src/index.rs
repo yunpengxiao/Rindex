@@ -108,7 +108,7 @@ pub struct IndexWritter<T: FileWritter> {
 
 impl<T: FileWritter> IndexWritter<T> {
     pub fn write_index(&self, index: &String, path: &str) -> Result<()> {
-        self.writter.write(index, path);
+        let _ = self.writter.write(index, path);
         Ok(())
     }
 }
@@ -119,7 +119,7 @@ pub struct DocumentReader<T: FileReader> {
 
 impl<T: FileReader> DocumentReader<T> {
     pub fn read_document(&mut self, buf: &mut [u8]) -> Result<()> {
-        self.reader.read(buf);
+        let _ = self.reader.read(buf);
         Ok(())
     }
 }
