@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 thiserror = "*"
 byteorder = "*"
-serde = "*"
+serde_json = "*"
+serde = { version = "*", features = ["derive"] }

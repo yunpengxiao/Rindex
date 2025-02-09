@@ -1,4 +1,5 @@
 use crate::storage::{DiskFileWritter, FileReader, FileWritter};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use thiserror::Error;
 
@@ -9,9 +10,12 @@ pub type Result<T> = core::result::Result<T, IndexError>;
 pub enum IndexError {
     #[error("Io Error: {0}")]
     Io(#[from] std::io::Error),
+
+    #[error("Serialization Error: {0}")]
+    Serialization(#[from] serde_json::Error),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Hit {
     pub document_id: u32,
     pub location: Vec<u32>,
@@ -73,7 +77,9 @@ impl Index {
     }
 
     // Save the current index on the disk
-    pub fn persist(&self, index: ) -> Result<()> {
+    pub fn persist(&self, path: &str) -> Result<()> {
+        let serialized_index = serde_json::to_string(&self.map)?;
+        self.index_writter.write_index(&serialized_index, path)?;
         Ok(())
     }
 
@@ -95,8 +101,8 @@ pub struct IndexWritter<T: FileWritter> {
 }
 
 impl<T: FileWritter> IndexWritter<T> {
-    pub fn write_index(&self, buf: &String) -> Result<()> {
-        self.writter.write(buf);
+    pub fn write_index(&self, index: &String, path: &str) -> Result<()> {
+        self.writter.write(index, path);
         Ok(())
     }
 }

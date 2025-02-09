@@ -1,3 +1,4 @@
+use std::fs;
 use std::io::{Read, SeekFrom};
 use std::{fs::File, io::Seek};
 
@@ -12,7 +13,7 @@ pub enum StorageError {
 }
 
 pub trait FileWritter {
-    fn write(&self, buf: &String) -> Result<()>;
+    fn write(&self, buf: &String, path: &str) -> Result<()>;
 }
 
 pub trait FileReader {
@@ -25,7 +26,8 @@ pub trait FileReader {
 pub struct DiskFileWritter;
 
 impl FileWritter for DiskFileWritter {
-    fn write(&self, buf: &String) -> Result<()> {
+    fn write(&self, buf: &String, path: &str) -> Result<()> {
+        let _ = fs::write(path, buf);
         Ok(())
     }
 }
