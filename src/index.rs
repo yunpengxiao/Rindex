@@ -15,7 +15,7 @@ pub enum IndexError {
     Serialization(#[from] serde_json::Error),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Hit {
     pub document_id: u32,
     pub location: Vec<u32>,

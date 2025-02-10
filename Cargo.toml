@@ -8,6 +8,7 @@ thiserror = "*"
 byteorder = "*"
 serde_json = "*"
 serde = { version = "*", features = ["derive"] }
+anyhow = "*"
 
 [lints.rust]
 unused_variables = "allow"
